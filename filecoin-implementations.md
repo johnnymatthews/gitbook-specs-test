@@ -1,2 +1,0 @@
-# Filecoin Implementations
-

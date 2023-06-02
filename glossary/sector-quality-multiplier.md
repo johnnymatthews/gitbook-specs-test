@@ -1,0 +1,1 @@
+# Sector quality multiplier
