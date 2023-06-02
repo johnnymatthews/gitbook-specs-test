@@ -21,7 +21,7 @@ At a high-level, the Filecoin blockchain grows through successive rounds of lead
 
 The Block is the main unit of the Filecoin blockchain, as is also the case with most other blockchains. Block messages are directly linked with Tipsets, which are groups of Block messages as detailed later on in this section. In the following we discuss the main structure of a Block message and the process of validating Block messages in the Filecoin blockchain.
 
-### [**Block**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block)
+### Block
 
 The Block is the main unit of the Filecoin blockchain.
 
@@ -29,7 +29,7 @@ The Block structure in the Filecoin blockchain is composed of: i) the Block Head
 
 The Lotus implementation of the block has the following `struct`:
 
-[Example: FullBlock ](https://spec.filecoin.io/#example-fullblock)
+Example: FullBlock
 
 ```go
 type FullBlock struct {
@@ -46,7 +46,7 @@ A `BlockHeader` is a canonical representation of a block. BlockHeaders are propa
 
 The Lotus implementation of the block header has the following `struct`s:
 
-[Example: BlockHeader ](https://spec.filecoin.io/#example-blockheader)
+Example: BlockHeader
 
 ```go
 type BlockHeader struct {
@@ -72,7 +72,7 @@ type BlockHeader struct {
 }
 ```
 
-[Example: Ticket ](https://spec.filecoin.io/#example-ticket)
+Example: Ticket
 
 ```go
 type Ticket struct {
@@ -80,7 +80,7 @@ type Ticket struct {
 }
 ```
 
-[Example: ElectionProof ](https://spec.filecoin.io/#example-electionproof)
+Example: ElectionProof
 
 ```go
 type ElectionProof struct {
@@ -89,7 +89,7 @@ type ElectionProof struct {
 }
 ```
 
-[Example: BeaconEntry ](https://spec.filecoin.io/#example-beaconentry)
+Example: BeaconEntry
 
 ```go
 type BeaconEntry struct {
@@ -108,7 +108,7 @@ The `Message` structure has to include the source (`From`) and destination (`To`
 
 The Lotus implementation of the message has the following structure:
 
-[Example: Message ](https://spec.filecoin.io/#example-message)
+Example: Message
 
 ```go
 type Message struct {
@@ -132,7 +132,7 @@ type Message struct {
 
 The message is also validated before it is passed to the [chain synchronization logic](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync):
 
-[Example: ValidForBlockInclusion ](https://spec.filecoin.io/#example-validforblockinclusion)
+Example: ValidForBlockInclusion
 
 ```go
 func (m *Message) ValidForBlockInclusion(minGas int64, version network.Version) error {
@@ -197,7 +197,7 @@ func (m *Message) ValidForBlockInclusion(minGas int64, version network.Version) 
 }
 ```
 
-#### [**Block syntax validation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block.block-syntax-validation)
+#### Block syntax validation
 
 Syntax validation refers to validation that should be performed on a block and its messages _without_ reference to outside information such as the parent state tree. This type of validation is sometimes called _static validation_.
 
@@ -237,7 +237,7 @@ In order to proceed to semantic validation the `FullBlock` must be assembled fro
 
 In the Lotus implementation the semantic validation of a block is carried out by the `Syncer` module:
 
-[Example: ValidateBlock ](https://spec.filecoin.io/#example-validateblock)ValidateBlock should match up with ‘Semantical Validation’ in validation.md in the spec
+Example: ValidateBlock
 
 ```go
 func (syncer *Syncer) ValidateBlock(ctx context.Context, b *types.FullBlock, useCache bool) (err error) {
@@ -350,7 +350,7 @@ A chain sync system may perform syntactic and semantic validation in stages in o
 
 If all of the above tests are successful, the block is marked as validated. Ultimately, an invalid block must not be propagated further or validated as a parent node.
 
-### [**Tipset**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.tipset)
+### Tipset
 
 Expected Consensus probabilistically elects multiple leaders in each epoch meaning a Filecoin chain may contain zero or multiple blocks at each epoch (one per elected miner). Blocks from the same epoch are assembled into tipsets. The [VM Interpreter](https://spec.filecoin.io/#section-systems.filecoin\_vm.interpreter) modifies the Filecoin state tree by executing all messages in a tipset (after de-duplication of identical messages included in more than one block).
 
@@ -372,7 +372,7 @@ Block producers are expected to coordinate how they select messages for inclusio
 
 The main Tipset structure in the Lotus implementation includes the following:
 
-[Example: TipSet ](https://spec.filecoin.io/#example-tipset)
+Example: TipSet
 
 ```go
 type TipSet struct {
@@ -384,7 +384,7 @@ type TipSet struct {
 
 Semantic validation of a Tipset includes the following checks.
 
-[Example: NewTipSet ](https://spec.filecoin.io/#example-newtipset)
+Example: NewTipSet
 
 Checks:
 
@@ -427,7 +427,7 @@ func NewTipSet(blks []*BlockHeader) (*TipSet, error) {
 }
 ```
 
-### [**Chain Manager**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.chain\_manager)
+### Chain Manager
 
 The _Chain Manager_ is a central component in the blockchain system. It tracks and updates competing subchains received by a given node in order to select the appropriate blockchain head: the latest block of the heaviest subchain it is aware of in the system.
 
@@ -452,7 +452,7 @@ Chain selection is a crucial component of how the Filecoin blockchain works. In 
 2. It may also be useful to compute and cache the resultant aggregate state of blocks in these sets, this saves extra state computation when checking which state root to start a block at when it has multiple parents.
 3. It is recommended that blocks are kept in the local datastore regardless of whether they are understood as the best tip at this point - this is to avoid having to refetch the same blocks in the future.
 
-[**ChainTipsManager**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.chain\_manager.chaintipsmanager)
+**ChainTipsManager**
 
 The Chain Tips Manager is a subcomponent of Filecoin consensus that is responsible for tracking all live tips of the Filecoin blockchain, and tracking what the current ‘best’ tipset is.
 
@@ -471,15 +471,15 @@ func GetBestTipset()
 func AddLosingTicket(parent Tipset, t Ticket)
 ```
 
-### [**Block Producer**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block\_producer)
+### Block Producer
 
-#### [**Mining Blocks**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block\_producer.mining-blocks)
+#### Mining Blocks
 
 A miner registered with the storage power actor may begin generating and checking election tickets if it has proven storage that meets the [Minimum Miner Size](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.minimum-miner-size) threshold requirement.
 
 In order to do so, the miner must be running chain validation, and be keeping track of the most recent blocks received. A miner’s new block will be based on parents from the previous epoch.
 
-[**Block Creation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block\_producer.block-creation)
+**Block Creation**
 
 Producing a block for epoch `H` requires waiting for the beacon entry for that epoch and using it to run `GenerateElectionProof`. If `WinCount` ≥ 1 (i.e., when the miner is elected), the same beacon entry is used to run `WinningPoSt`. Armed by the `ElectionProof` ticket (output of `GenerateElectionProof`) and the `WinningPoSt` proof, the miner can produce an new block.
 
@@ -512,17 +512,17 @@ The block reward is not evaluated when producing a block. It is paid when the bl
 
 The block’s signature ensures integrity of the block after propagation, since unlike many PoW blockchains, a winning ticket is found independently of block generation.
 
-[**Block Broadcast**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block\_producer.block-broadcast)
+**Block Broadcast**
 
 An eligible miner propagates the completed block to the network using the [GossipSub](https://spec.filecoin.io/#section-algorithms.gossip\_sub) `/fil/blocks` topic and, assuming everything was done correctly, the network will accept it and other miners will mine on top of it, earning the miner a block reward.
 
 Miners should output their valid block as soon as it is produced, otherwise they risk other miners receiving the block after the EPOCH\_CUTOFF and not including them in the current epoch.
 
-[**Block Rewards**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block\_producer.block-rewards)
+**Block Rewards**
 
 Block rewards are handled by the [Reward Actor](https://spec.filecoin.io/#section-systems.filecoin\_vm.sysactors.rewardactor). Further details on the Block Reward are discussed in the [Filecoin Token](https://spec.filecoin.io/#section-systems.filecoin\_token) section and details about the Block Reward Collateral are discussed in the [Miner Collaterals](https://spec.filecoin.io/#section-systems.filecoin\_mining.miner\_collaterals) section.
 
-## [Message Pool](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.message\_pool) <a href="#section-systems.filecoin_blockchain.message_pool" id="section-systems.filecoin_blockchain.message_pool"></a>
+## Message Pool
 
 The Message Pool, or `mpool` or `mempool` is a pool of messages in the Filecoin protocol. It acts as the interface between Filecoin nodes and the peer-to-peer network of other nodes used for off-chain message propagation. The message pool is used by nodes to maintain a set of messages they want to transmit to the Filecoin VM and add to the chain (i.e., add for “on-chain” execution).
 
@@ -532,7 +532,7 @@ Message propagation using GossipSub does not happen immediately and therefore, t
 
 The message pool should have a maximum size defined to avoid DoS attacks, where nodes are spammed and run out of memory. The recommended size for the message pool is 5000 messages.
 
-### [**Message Propagation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.message\_pool.message\_syncer)
+### Message Propagation
 
 The message pool has to interface with the libp2p pubsub [GossipSub](https://github.com/libp2p/specs/tree/master/pubsub/gossipsub) protocol. This is because messages are propagated over [GossipSub](https://github.com/libp2p/specs/tree/master/pubsub/gossipsub) the corresponding `/fil/msgs/` _topic_. Every [Message](https://spec.filecoin.io/#section-systems.filecoin\_vm.message) is announced in the corresponding `/fil/msgs/` topic by any node participating in the network.
 
@@ -552,17 +552,17 @@ NOTES:
 * _Fund Checking:_ It is important to note that the `mpool` logic is not checking whether there are enough funds in the account of the message issuer. This is checked by the miner before including a message in a block.
 * _Message Sorting:_ Messages are sorted in the `mpool` of miners as they arrive according to cryptoeconomic rules followed by the miner and in order for the miner to compose the next block.
 
-### [**Message Storage**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.message\_pool.message\_storage)
+### Message Storage
 
 As mentioned earlier, there is no central pool where messages are included. Instead, every node must have allocated memory for incoming messages.
 
-## [ChainSync](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync) <a href="#section-systems.filecoin_blockchain.chainsync" id="section-systems.filecoin_blockchain.chainsync"></a>
+## ChainSync
 
 Blockchain synchronization (“sync”) is a key part of a blockchain system. It handles retrieval and propagation of blocks and messages, and thus is in charge of distributed state replication. As such, this process is security critical – problems with state replication can have severe consequences to the operation of a blockchain.
 
 When a node first joins the network it discovers peers (through the peer discovery discussed above) and joins the `/fil/blocks` and `/fil/msgs` GossipSub topics. It listens to new blocks being propagated by other nodes. It picks one block as the `BestTargetHead` and starts syncing the blockchain up to this height from the `TrustedCheckpoint`, which by default is the `GenesisBlock` or `GenesisCheckpoint`. In order to pick the `BestTargetHead` the peer is comparing a combination of height and weight - the higher these values the higher the chances of the block being on the main chain. If there are two blocks on the same height, the peer should choose the one with the higher weight. Once the peer chooses the `BestTargetHead` it uses the BlockSync protocol to fetch the blocks and get to the current height. From that point on it is in `CHAIN_FOLLOW` mode, where it uses GossipSub to receive new blocks, or Bitswap if it hears about a block that it has not received through GossipSub.
 
-### [**ChainSync Overview**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.chainsync-overview)
+### ChainSync Overview
 
 `ChainSync` is the protocol Filecoin uses to synchronize its blockchain. It is specific to Filecoin’s choices in state representation and consensus rules, but is general enough that it can serve other blockchains. `ChainSync` is a group of smaller protocols, which handle different parts of the sync process.
 
@@ -582,13 +582,13 @@ In addition, `Bitswap` is used to request and receive blocks, when a node is syn
 
 Filecoin nodes are libp2p nodes, and therefore may run a variety of other protocols. As with anything else in Filecoin, nodes MAY opt to use additional protocols to achieve the results. That said, nodes MUST implement the version of `ChainSync` as described in this spec in order to be considered implementations of Filecoin.
 
-### [**Terms and Concepts**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.terms-and-concepts)
+### Terms and Concepts
 
 * `LastCheckpoint` the last hard social-consensus oriented checkpoint that `ChainSync` is aware of. This consensus checkpoint defines the minimum finality, and a minimum of history to build on. `ChainSync` takes `LastCheckpoint` on faith, and builds on it, never switching away from its history.
 * `TargetHeads` a list of `BlockCIDs` that represent blocks at the fringe of block production. These are the newest and best blocks `ChainSync` knows about. They are “target” heads because `ChainSync` will try to sync to them. This list is sorted by “likelihood of being the best chain”. At this point this is simply realized through `ChainWeight`.
 * `BestTargetHead` the single best chain head `BlockCID` to try to sync to. This is the first element of `TargetHeads`
 
-### [**ChainSync State Machine**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.chainsync-state-machine)
+### ChainSync State Machine
 
 At a high level, `ChainSync` does the following:
 
@@ -616,23 +616,23 @@ At a high level, `ChainSync` does the following:
 
 <figure><img src="https://spec.filecoin.io/_gen/diagrams/systems/filecoin_blockchain/chainsync/chainsync_fsm.svg?1639060809" alt="ChainSync State Machine" height="100%"><figcaption><p><a href="https://spec.filecoin.io/#figure-chainsync-state-machine">Figure: ChainSync State Machine</a> </p></figcaption></figure>
 
-### [**Peer Discovery**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.peer-discovery)
+### Peer Discovery
 
 Peer discovery is a critical part of the overall architecture. Taking this wrong can have severe consequences for the operation of the protocol. The set of peers a new node initially connects to when joining the network may completely dominate the node’s awareness of other peers, and therefore the view of the state of the network that the node has.
 
 Peer discovery can be driven by arbitrary external means and is pushed outside the core functionality of the protocols involved in ChainSync (i.e., GossipSub, Bitswap, BlockSync). This allows for orthogonal, application-driven development and no external dependencies for the protocol implementation. Nonetheless, the GossipSub protocol supports: i) Peer Exchange, and ii) Explicit Peering Agreements.
 
-#### [**Peer Exchange**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.peer-exchange)
+#### Peer Exchange
 
 Peer Exchange allows applications to bootstrap from a known set of peers without an external peer discovery mechanism. This process can be realized either through bootstrap nodes or other normal peers. **Bootstrap nodes must be maintained by system operators and must be configured correctly.** They have to be stable and operate independently of protocol constructions, such as the GossipSub mesh construction, that is, bootstrap nodes do not maintain connections to the mesh.
 
 For more details on Peer Exchange please refer to the [GossipSub specification](https://github.com/libp2p/specs/tree/master/pubsub/gossipsub).
 
-#### [**Explicit Peering Agreements**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.explicit-peering-agreements)
+#### Explicit Peering Agreements
 
 With explicit peering agreements, the operators must specify a list of peers which nodes should connect to when joining. The protocol must have options available for these to be specified. For every explicit peer, the router must establish and maintain a bidirectional (reciprocal) connection.
 
-### [**Progressive Block Validation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.chainsync.progressive-block-validation)
+### Progressive Block Validation
 
 * [Blocks](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.struct.block) may be validated in progressive stages, in order to minimize resource expenditure.
 * Validation computation is considerable, and a serious DOS attack vector.
@@ -650,7 +650,7 @@ With explicit peering agreements, the operators must specify a list of peers whi
   * **BV7 - Message Signatures**:
   * **BV8 - State tree**: Parent tipset message execution produces the claimed state tree root and receipts.
 
-## [Storage Power Consensus](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus) <a href="#section-systems.filecoin_blockchain.storage_power_consensus" id="section-systems.filecoin_blockchain.storage_power_consensus"></a>
+## Storage Power Consensus
 
 The Storage Power Consensus (SPC) subsystem is the main interface which enables Filecoin nodes to agree on the state of the system. Storage Power Consensus accounts for individual storage miners' effective power over consensus in given chains in its [Power Table](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.storage\_power\_actor.the-power-table). It also runs [Expected Consensus](https://spec.filecoin.io/#section-algorithms.expected\_consensus) (the underlying consensus algorithm in use by Filecoin), enabling storage miners to run leader election and generate new blocks updating the state of the Filecoin system.
 
@@ -663,7 +663,7 @@ Succinctly, the SPC subsystem offers the following services:
   * Running [Chain Selection](https://spec.filecoin.io/#section-algorithms.expected\_consensus.chain-selection) across subchains using EC’s weighting function.
   * Identification of [the most recently finalized tipset](https://spec.filecoin.io/#section-algorithms.expected\_consensus.finality-in-ec), for use by all protocol participants.
 
-### [**Distinguishing between storage miners and block miners**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.distinguishing-between-storage-miners-and-block-miners)
+### Distinguishing between storage miners and block miners
 
 There are two ways to earn Filecoin tokens in the Filecoin network:
 
@@ -674,7 +674,7 @@ There are two types of “miners” (storage and block miners) to be distinguish
 
 However, given Filecoin’s “useful Proof-of-Work” is achieved through file storage ( [PoRep](https://spec.filecoin.io/#section-algorithms.pos.porep) and [PoSt](https://spec.filecoin.io/#section-algorithms.pos.post)), there is little overhead cost for storage miners to participate in leader election. Such a [Storage Miner Actor](https://spec.filecoin.io/#section-systems.filecoin\_mining.storage\_mining.storage\_miner\_actor) need only register with the [Storage Power Actor](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.storage\_power\_actor) in order to participate in Expected Consensus and mine blocks.
 
-### [**On Power**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.on-power)
+### On Power
 
 Quality-adjusted power is assigned to every sector as a static function of its _**Sector Quality**_ which includes: i) the **Sector Spacetime**, which is the product of the sector size and the promised storage duration, ii) the **Deal Weight** that converts spacetime occupied by deals into consensus power, iii) the **Deal Quality Multiplier** that depends on the type of deal done over the sector (i.e., CC, Regular Deal or Verified Client Deal), and finally, iv) the **Sector Quality Multiplier**, which is an average of deal quality multipliers weighted by the amount of spacetime each type of deal occupies in the sector.
 
@@ -689,7 +689,7 @@ More precisely, we have the following definitions:
 * _Raw-byte power_: the size of a sector in bytes.
 * _Quality-adjusted power_: the consensus power of stored data on the network, equal to Raw-byte power multiplied by the Sector Quality Multiplier.
 
-### [**Beacon Entries**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.beacon-entries)
+### Beacon Entries
 
 The Filecoin protocol uses randomness produced by a [drand](https://spec.filecoin.io/#section-libraries.drand) beacon to seed unbiasable randomness seeds for use in the chain (see [randomness](https://spec.filecoin.io/#section-algorithms.crypto.randomness)).
 
@@ -703,15 +703,15 @@ This randomness may be drawn from various Filecoin chain epochs by the respectiv
 
 It is important to note that a given Filecoin network and a given drand network need not have the same round time, i.e. blocks may be generated faster or slower by Filecoin than randomness is generated by drand. For instance, if the drand beacon is producing randomness twice as fast as Filecoin produces blocks, we might expect two random values to be produced in a Filecoin epoch, conversely if the Filecoin network is twice as fast as drand, we might expect a random value every other Filecoin epoch. Accordingly, depending on both networks' configurations, certain Filecoin blocks could contain multiple or no drand entries. Furthermore, it must be that any call to the drand network for a new randomness entry during an outage should be blocking, as noted with the `drand.Public()` calls below. In all cases, Filecoin blocks must include all drand beacon outputs generated since the last epoch in the `BeaconEntries` field of the block header. Any use of randomness from a given Filecoin epoch should use the last valid drand entry included in a Filecoin block. This is shown below.
 
-#### [**Get drand randomness for VM**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.get-drand-randomness-for-vm)
+#### Get drand randomness for VM
 
 For operations such as PoRep creation, proof validations, or anything that requires randomness for the Filecoin VM, there should be a method that extracts the drand entry from the chain correctly. Note that the round may span multiple filecoin epochs if drand is slower; the lowest epoch number block will contain the requested beacon entry. Similarly, if there has been null rounds where the beacon should have been inserted, we need to iterate on the chain to find where the entry is inserted. Specifically, the next non-null block must contain the drand entry requested by definition.
 
-#### [**Fetch randomness from drand network**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.fetch-randomness-from-drand-network)
+#### Fetch randomness from drand network
 
 When mining, a miner can fetch entries from the drand network to include them in the new block.
 
-[Example: DrandBeacon ](https://spec.filecoin.io/#example-drandbeacon)
+Example: DrandBeacon
 
 DrandBeacon connects Lotus with a drand network in order to provide randomness to the system in a way that’s aligned with Filecoin rounds/epochs.
 
@@ -736,7 +736,7 @@ type DrandBeacon struct {
 }
 ```
 
-[Example: BeaconEntriesForBlock ](https://spec.filecoin.io/#example-beaconentriesforblock)
+Example: BeaconEntriesForBlock
 
 ```go
 func BeaconEntriesForBlock(ctx context.Context, bSchedule Schedule, epoch abi.ChainEpoch, parentEpoch abi.ChainEpoch, prev types.BeaconEntry) ([]types.BeaconEntry, error) {
@@ -800,7 +800,7 @@ func BeaconEntriesForBlock(ctx context.Context, bSchedule Schedule, epoch abi.Ch
 }
 ```
 
-[Example: MaxBeaconRoundForEpoch ](https://spec.filecoin.io/#example-maxbeaconroundforepoch)
+Example: MaxBeaconRoundForEpoch
 
 ```go
 func (db *DrandBeacon) MaxBeaconRoundForEpoch(filEpoch abi.ChainEpoch) uint64 {
@@ -811,13 +811,13 @@ func (db *DrandBeacon) MaxBeaconRoundForEpoch(filEpoch abi.ChainEpoch) uint64 {
 }
 ```
 
-#### [**Validating Beacon Entries on block reception**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.validating-beacon-entries-on-block-reception)
+#### Validating Beacon Entries on block reception
 
 A Filecoin chain will contain the entirety of the beacon’s output from the Filecoin genesis to the current block.
 
 Given their role in leader election and other critical protocols in Filecoin, a block’s beacon entries must be validated for every block. See [drand](https://spec.filecoin.io/#section-libraries.drand) for details. This can be done by ensuring every beacon entry is a valid signature over the prior one in the chain, using drand’s [`Verify`](https://github.com/drand/drand/blob/763e9a252cf59060c675ced0562e8eba506971c1/chain/beacon.go#L76) endpoint as follows:
 
-[Example: ValidateBlockValues ](https://spec.filecoin.io/#example-validateblockvalues)
+Example: ValidateBlockValues
 
 ```go
 func ValidateBlockValues(bSchedule Schedule, h *types.BlockHeader, parentEpoch abi.ChainEpoch,
@@ -868,13 +868,13 @@ func ValidateBlockValues(bSchedule Schedule, h *types.BlockHeader, parentEpoch a
 }
 ```
 
-### [**Tickets**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.tickets)
+### Tickets
 
 Filecoin block headers also contain a single “ticket” generated from its epoch’s beacon entry. Tickets are used to break ties in the Fork Choice Rule, for forks of equal weight.
 
 Whenever comparing tickets in Filecoin, the comparison is that of the ticket’s VRF Digest’s bytes.
 
-#### [**Randomness Ticket generation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.randomness-ticket-generation)
+#### Randomness Ticket generation
 
 At a Filecoin epoch `n`, a new ticket is generated using the appropriate beacon entry for epoch `n`.
 
@@ -887,13 +887,13 @@ randSeed = GetRandomnessFromBeacon(n)
 newTicketRandomness = VRF_miner(H(TicketProdDST || index || Serialization(randSeed, minerActorAddress)))
 ```
 
-[Verifiable Random Functions](https://spec.filecoin.io/#section-algorithms.crypto.vrf) are used for ticket generation.
+Verifiable Random Functions are used for ticket generation.
 
-#### [**Ticket Validation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.ticket-validation)
+#### Ticket Validation
 
 Each Ticket should be generated from the prior one in the VRF-chain and verified accordingly.
 
-### [**Minimum Miner Size**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.minimum-miner-size)
+### Minimum Miner Size
 
 In order to secure Storage Power Consensus, the system defines a minimum miner size required to participate in consensus.
 
@@ -905,11 +905,11 @@ Accordingly, to bootstrap the network, the genesis block must include miners, po
 
 The `MIN_MINER_SIZE_TARG` condition will not be used in a network in which any miner has more than `MIN_MINER_SIZE_STOR` power. It is nonetheless defined to ensure liveness in small networks (e.g. close to genesis or after large power drops).
 
-### [**Storage Power Actor**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.storage\_power\_actor)
+### Storage Power Actor
 
-#### [**`StoragePowerActorState` implementation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.storage\_power\_actor.storagepoweractorstate-implementation)
+#### `StoragePowerActorState` implementation
 
-[Example: State ](https://spec.filecoin.io/#example-state)
+Example: State
 
 ```go
 type State struct {
@@ -946,7 +946,7 @@ type State struct {
 }
 ```
 
-#### [**`StoragePowerActor` implementation**](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus.storage\_power\_actor.storagepoweractor-implementation)
+#### `StoragePowerActor` implementation
 
 Example: Exports&#x20;
 
@@ -983,7 +983,7 @@ type MinerConstructorParams struct {
 }
 ```
 
-#### **The Power Table**
+#### The Power Table
 
 The portion of blocks a given miner generates through leader election in EC (and so the block rewards they earn) is proportional to their `Quality-Adjusted Power Fraction` over time. That is, a miner whose quality adjusted power represents 1% of total quality adjusted power on the network should mine 1% of blocks on expectation.
 
@@ -1005,7 +1005,7 @@ The Miner lifecycle in the power table should be roughly as follows:
 
 To summarize, only sectors in the Active state will command power. A Sector becomes Active when it is added upon `ProveCommit`. Power is immediately decremented when it enters into the faulty state. Power will be restored when its declared recovery is proven. A sector’s power is removed when it is expired or terminated through miner invocation.
 
-#### **Pledge Collateral**
+#### Pledge Collateral
 
 Pledge Collateral is slashed for any fault affecting storage-power consensus, these include:
 
