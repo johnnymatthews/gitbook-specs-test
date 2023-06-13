@@ -4,11 +4,11 @@ Filecoin is a consensus protocol, a data-storage platform, and a marketplace for
 
 Even though most of the market actions happen off the blockchain, there are on-chain invariants that create economic structure for network success and allow for positive emergent behavior. You can read more about the relationship between on-chain deals and storage power in [Storage Power Consensus](https://spec.filecoin.io/#section-systems.filecoin\_blockchain.storage\_power\_consensus).
 
-### [Storage Market in Filecoin](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market) <a href="#section-systems.filecoin_markets.storage_market" id="section-systems.filecoin_markets.storage_market"></a>
+## [Storage Market in Filecoin](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market) <a href="#section-systems.filecoin_markets.storage_market" id="section-systems.filecoin_markets.storage_market"></a>
 
 Storage Market subsystem is the data entry point into the network. Storage miners only earn power from data stored in a storage deal and all deals live on the Filecoin network. Specific deal negotiation process happens off chain, clients and miners enter a storage deal after an agreement has been reached and post storage deals on the Filecoin network to earn block rewards and get paid for storing the data in the storage deal. A deal is only valid when it is posted on chain with signatures from both parties and at the time of posting, there are sufficient balances for both parties locked up to honor the deal in terms of deal price and deal collateral.
 
-#### [**Terminology**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.terminology)
+### [**Terminology**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.terminology)
 
 * **StorageClient** - The party that wants to make a deal to store data
 * **StorageProvider** - The party that will store the data in exchange for payment. A storage miner.
@@ -17,7 +17,7 @@ Storage Market subsystem is the data entry point into the network. Storage miner
 * **StorageDealProposal** - A proposal for a storage deal, signed only by the - `Storage client`
 * **StorageDeal** - A storage deal proposal with a counter signature from the Provider, which then goes on-chain.
 
-#### [**Deal Flow**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.deal-flow)
+### [**Deal Flow**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.deal-flow)
 
 The lifecycle for a deal within the storage market contains distinct phases:
 
