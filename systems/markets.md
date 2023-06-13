@@ -427,7 +427,7 @@ func curTime() cbg.CborTime {
 
 Details about `StorageDealProposal` and `StorageDeal` (which are used in the Storage Market and elsewhere) specifically can be found in Storage Deal.
 
-[**Protocols**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.protocols)
+### [**Protocols**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.protocols)
 
 > **Name**: Storage Query Protocol\
 > **Protocol ID**: `/fil/<network-name>/storage/ask/1.0.1`
@@ -439,7 +439,7 @@ Request: CBOR Encoded AskProtocolRequest Data Structure Response: CBOR Encoded A
 
 Request: CBOR Encoded DealProtocolRequest Data Structure Response: CBOR Encoded DealProtocolResponse Data Structure
 
-[**Storage Provider**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.storage-provider)
+### [**Storage Provider**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.storage-provider)
 
 The `StorageProvider` is a module that handles incoming queries for Asks and proposals for Deals from a `StorageClient`. It also tracks deals as they move through the deal flow, handling off chain actions during the negotiation phases of the deal and ultimately telling the `StorageMarketActor` to publish on chain. The `StorageProvider`’s last action is to handoff a published deal for storage and sealing to the Storage Mining Subsystem. Note that any address registered as a `StorageMarketParticipant` with the `StorageMarketActor` can be used with the `StorageClient`.
 
@@ -507,7 +507,7 @@ type StorageProvider interface {
 }
 ```
 
-[**Storage Client**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.storage-client)
+### [**Storage Client**](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market.storage-client)
 
 The `StorageClient` is a module that discovers miners, determines their asks, and proposes deals to `StorageProviders`. It also tracks deals as they move through the deal flow. Note that any address registered as a `StorageMarketParticipant` with the `StorageMarketActor` can be used with the `StorageClient`.
 
@@ -589,9 +589,9 @@ type StorageClient interface {
 }
 ```
 
-#### [Storage Market On-Chain Components](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market) <a href="#section-systems.filecoin_markets.onchain_storage_market" id="section-systems.filecoin_markets.onchain_storage_market"></a>
+## [Storage Market On-Chain Components](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market) <a href="#section-systems.filecoin_markets.onchain_storage_market" id="section-systems.filecoin_markets.onchain_storage_market"></a>
 
-[**Storage Deals**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage-deals)
+### [**Storage Deals**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage-deals)
 
 There are two types of deals in Filecoin markets, storage deals and retrieval deals. Storage deals are recorded on the blockchain and enforced by the protocol. Retrieval deals are off chain and enabled by a micropayment channel between transacting parties (see [Retrieval Market](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market) for more information).
 
@@ -599,7 +599,7 @@ The lifecycle of a Storage Deal touches several major subsystems, components, an
 
 This section describes the storage deal data type and provides a technical outline of the deal flow in terms of how all the components interact with each other, as well as the functions they call. For more detail on the off-chain parts of the storage market see the [Storage Market section](https://spec.filecoin.io/#section-systems.filecoin\_markets.storage\_market).
 
-[**Data Types**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.data-types)
+### [**Data Types**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.data-types)
 
 [Example: ](https://spec.filecoin.io/#example-)
 
@@ -2141,11 +2141,11 @@ This collateral is returned to the storage provider when all deals in the sector
 MinimumProviderDealCollateral=1%×FILCirculatingSupply×DealRawBytemax(NetworkBaseline,NetworkRawBytePower)MinimumProviderDealCollateral=1%×FILCirculatingSupply×max(NetworkBaseline,NetworkRawBytePower)DealRawByte​
 ```
 
-[**Storage Deal Flow**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow)
+### [**Storage Deal Flow**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow)
 
 <figure><img src="https://spec.filecoin.io/_gen/diagrams/systems/filecoin_markets/onchain_storage_market/diagrams/deal-flow.svg?1639060809" alt="Deal Flow Sequence Diagram" height="100%"><figcaption><p><a href="https://spec.filecoin.io/#figure-deal-flow-sequence-diagram">Figure: Deal Flow Sequence Diagram</a> </p></figcaption></figure>
 
-[**Add Storage Deal and Power**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.add-storage-deal-and-power)
+#### [**Add Storage Deal and Power**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.add-storage-deal-and-power)
 
 1. `StorageClient` and `StorageProvider` call `StorageMarketActor.AddBalance` to deposit funds into Storage Market.
    * `StorageClient` and `StorageProvider` can call `WithdrawBalance` before any deal is made.
@@ -2157,41 +2157,41 @@ MinimumProviderDealCollateral=1%×FILCirculatingSupply×DealRawBytemax(NetworkBa
      * It is possible for either `StorageProvider` or `StorageClient` to try to enter into two deals simultaneously with funds available only for one. Only the first deal to commit to the chain will clear, the second will fail with error `errorcode.InsufficientFunds`.
    * `StorageProvider` calls `HandleStorageDeal` in `StorageMiningSubsystem` which will then add the `StorageDeal` into a `Sector`.
 
-[**Sealing sectors**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.sealing-sectors)
+#### [**Sealing sectors**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.sealing-sectors)
 
 4. Once a miner finishes packing a `Sector`, it generates a `SectorPreCommitInfo` and calls `PreCommitSector` or `PreCommitSectorBatch` with a `PreCommitDeposit`. It must call `ProveCommitSector` or `ProveCommitAggregate with` SectorProveCommitInfo`within some bound to recover the deposit. Initial pledge will then be required at time of`ProveCommit`. Initial Pledge is usually higher than` PreCommitDeposit`. Recovered` PreCommitDeposit`will count towards Initial Pledge and miners only need to top up additional funds at`ProveCommit`. Excess` PreCommitDeposit`, when it is greater than Initial Pledge, will be returned to the miner. An expired` PreCommit`message will result in`PreCommitDeposit`being burned. All Sectors have an explicit expiration epoch declared during`PreCommit`. For sectors with deals, all deals must expire before sector expiration. The Miner gains power for this particular sector upon successful` ProveCommit\`. For more details on the Sectors and the different types of deals that can be included in a Sector refer to the [Sector section](https://spec.filecoin.io/#section-systems.filecoin\_mining.sector).
 
-[**Prove Storage**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.prove-storage)
+#### [**Prove Storage**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.prove-storage)
 
 5. Miners have to prove that they hold unique copies of Sectors by submitting proofs according to the [Proof of SpaceTime](https://spec.filecoin.io/#section-algorithms.pos.post) algorithm. Miners have to prove all their Sectors in regular time intervals in order for the system to guarantee that they indeed store the data they committed to store in the deal phase.
 
-[**Declare and Recover Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.declare-and-recover-faults)
+#### [**Declare and Recover Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.declare-and-recover-faults)
 
 6. Miners can call `DeclareFaults` to mark certain Sectors as faulty to avoid paying Sector Fault Detection Fee. Power associated with the sector will be removed at fault declaration.
 7. Miners can call `DeclareFaultsRecovered` to mark previously faulty sector as recovered. Power will be restored when recovered sectors pass WindowPoSt checks successfully.
 8. A sector pays a Sector Fault Fee for every proving period during which it is marked as faulty.
 
-[**Skipped Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.skipped-faults)
+#### [**Skipped Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.skipped-faults)
 
 9. After a WindowPoSt deadline opens, a miner can mark one of their sectors as faulty and exempted by WindowPoSt checks, hence Skipped Faults. This could avoid paying a Sector Fault Detection Fee on the whole partition.
 
-[**Detected Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.detected-faults)
+#### [**Detected Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.detected-faults)
 
 10. If a partition misses a WindowPoSt submission deadline, all previously non-faulty sectors in the partition are detected as faulty and a Fault Detection Fee is charged.
 
-[**Sector Expiration**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.sector-expiration)
+#### [**Sector Expiration**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.sector-expiration)
 
 11. Sector expires when its expiration epoch is reached and sector expiration epoch must be greater than the expiration epoch of all its deals.
 
-[**Sector Termination**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.sector-termination)
+#### [**Sector Termination**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.sector-termination)
 
 12. Termination of a sector can be triggered in two ways. One when sector remains faulty for 42 consecutive days and the other when a miner initiates a termination by calling `TerminateSectors`. In both cases, a `TerminationFee` is penalized, which is in principle equivalent to how much the sector has earned so far. Miners are also penalized for the `DealCollateral` that the sector contains and remaining `DealPayment` will be returned to clients.
 
-[**Deal Payment and slashing**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.deal-payment-and-slashing)
+#### [**Deal Payment and slashing**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_flow.deal-payment-and-slashing)
 
 13. Deal payment and slashing are evaluated lazily through `updatePendingDealState` called at `CronTick`.
 
-[**Storage Deal States**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_states)
+### [**Storage Deal States**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.storage\_deal\_states)
 
 All on-chain economic activities in Filecoin start with the storage deal. This section aims to explain different states of a storage deal and their relationship with other concepts in the protocol such as Power, Payment, and Collaterals.
 
@@ -2222,7 +2222,7 @@ Given the **onchain deal states and their transitions** discussed above, below i
 
 <figure><img src="https://spec.filecoin.io/_gen/diagrams/systems/filecoin_markets/onchain_storage_market/diagrams/deal-payment.svg?1639060809" alt="Deal States Sequence Diagram" height="100%"><figcaption><p><a href="https://spec.filecoin.io/#figure-deal-states-sequence-diagram">Figure: Deal States Sequence Diagram</a> </p></figcaption></figure>
 
-[**Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.faults)
+### [**Faults**](https://spec.filecoin.io/#section-systems.filecoin\_markets.onchain\_storage\_market.faults)
 
 There are two main categories of faults in the Filecoin network:
 
@@ -2233,9 +2233,9 @@ Please refer to the corresponding sections for more details.
 
 Both Storage and Consensus Faults come with penalties that slash the miner’s collateral. See more details on the different types of collaterals in the [Miner Collaterals](https://spec.filecoin.io/#section-systems.filecoin\_mining.miner\_collaterals).
 
-#### [Retrieval Market in Filecoin](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market) <a href="#section-systems.filecoin_markets.retrieval_market" id="section-systems.filecoin_markets.retrieval_market"></a>
+## [Retrieval Market in Filecoin](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market) <a href="#section-systems.filecoin_markets.retrieval_market" id="section-systems.filecoin_markets.retrieval_market"></a>
 
-[**Components**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.components)
+### [**Components**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.components)
 
 The `retrieval market` refers to the process of negotiating deals for a provider to serve stored data to a client. It should be highlighted that the negotiation process for the retrieval happens primarily off-chain. It is only some parts of it (mostly relating to redeeming vouchers from payment channels) that involve interaction with the blockchain.
 
@@ -2252,7 +2252,7 @@ The retrieval market operate by piggybacking on the Data Transfer system and Gra
 
 The Data Transfer System is augmented accordingly to support pausing/resuming and sending intermediate vouchers to facilitate this.
 
-[**Deal Flow in the Retrieval Market**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.deal-flow-in-the-retrieval-market)
+### [**Deal Flow in the Retrieval Market**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.deal-flow-in-the-retrieval-market)
 
 <figure><img src="https://spec.filecoin.io/_gen/diagrams/systems/filecoin_markets/retrieval_market/retrieval_flow_v1.svg?1639060809" alt="Retrieval Flow" height="100%"><figcaption><p><a href="https://spec.filecoin.io/#figure-retrieval-flow">Figure: Retrieval Flow</a> </p></figcaption></figure>
 
@@ -2286,7 +2286,7 @@ Some extra notes worth making with regard to the above process are as follows:
 * Once the data transfer is complete, the client or provider may Settle the channel. There is then a 12hr period within which the provider has to submit the redeemed vouchers on-chain in order to collect the funds. Once the 12hr period is complete, the client may collect any unclaimed funds from the channel, and the provider loses the funds for vouchers they did not submit.
 * The provider can ask for a small payment ahead of the transfer, before they start unsealing data. The payment is meant to support the providers' computational cost of unsealing the first chunk of data (where chunk is the agreed step-wise data transfer). This process is needed in order to avoid clients from carrying out a DoS attack, according to which they start several deals and cause the provider to engage a large amount of computational resources.
 
-[**Bootstrapping Trust**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.bootstrapping-trust)
+### [**Bootstrapping Trust**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.bootstrapping-trust)
 
 Neither the client nor the provider have any specific reason to trust each other. Therefore, trust is established indirectly by payments for a retrieval deal done _incrementally_. This is achieved by sending vouchers as the data transfer progresses.
 
@@ -2302,7 +2302,7 @@ Trust establishment proceeds as follows:
   * The client must pay (i.e., issue subsequent vouchers) for all bytes it has not yet paid for when the provider requests payment, assuming it has received at least 1300 bytes since last payment.
   * The process continues until the end of the retrieval, when the last payment will simply be for the remainder of bytes.
 
-[**Data Representation in the Retrieval Market**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.data-representation-in-the-retrieval-market)
+### [**Data Representation in the Retrieval Market**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.data-representation-in-the-retrieval-market)
 
 The retrieval market works based on the Payload CID. The PayloadCID is the hash that represents the root of the IPLD DAG of the UnixFS version of the file. At this stage the file is a raw system file with IPFS-style representation. In order for a client to request for some data under the retrieval market, they have to know the PayloadCID. It is important to highlight that PayloadCIDs are not stored or registered on-chain.
 
@@ -2747,7 +2747,7 @@ type PricingInput struct {
 }
 ```
 
-[**Retrieval Peer Resolver**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_peer\_resolver)
+### [**Retrieval Peer Resolver**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_peer\_resolver)
 
 The `peer resolver` is a content routing interface to discover retrieval miners that have a given Piece.
 
@@ -2760,7 +2760,7 @@ type PeerResolver interface {
 }
 ```
 
-[**Retrieval Protocols**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_protocols)
+### [**Retrieval Protocols**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_protocols)
 
 The `retrieval market` is implemented using the following `libp2p` service.
 
@@ -2768,9 +2768,9 @@ The `retrieval market` is implemented using the following `libp2p` service.
 
 Request: CBOR Encoded RetrievalQuery Data Structure Response: CBOR Encoded RetrievalQueryResponse Data Structure
 
-[**Retrieval Client**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_client)
+### [**Retrieval Client**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_client)
 
-[**Client Dependencies**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_client.client-dependencies)
+#### [**Client Dependencies**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_client.client-dependencies)
 
 The Retrieval Client Depends On The Following Dependencies
 
@@ -2870,9 +2870,9 @@ type RetrievalClient interface {
 }
 ```
 
-[**Retrieval Provider (Miner)**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_provider)
+### [**Retrieval Provider (Miner)**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_provider)
 
-[**Provider Dependencies**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_provider.provider-dependencies)
+#### [**Provider Dependencies**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.retrieval\_provider.provider-dependencies)
 
 The Retrieval Provider depends on the following dependencies
 
@@ -2927,7 +2927,7 @@ type AskStore interface {
 }
 ```
 
-[**Retrieval Deal Status**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.deal\_status)
+### [**Retrieval Deal Status**](https://spec.filecoin.io/#section-systems.filecoin\_markets.retrieval\_market.deal\_status)
 
 [Example: ](https://spec.filecoin.io/#example-)
 
